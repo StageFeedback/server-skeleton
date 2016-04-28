@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mehtabhinav/server-skeleton#readme",
   "devDependencies": {
+    "aws-sdk": "^2.3.6",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
     "mongodb": "^2.1.16"
