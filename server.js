@@ -15,7 +15,7 @@ var db;
 
 mongodb.MongoClient.connect(process.env.MONGODB_URI, function(err, database){
   if (err) {
-    console.log(err);
+    console.log('hello');
     process.exit(1);
   }
 
@@ -35,5 +35,22 @@ function handleError(res, reason, message, code){
 }
 
 app.get("/contacts", function(req, res){
-  
+
+});
+
+app.post("/contacts", function(req, res) {
+  var newContact = req.body;
+  newContact.createDate = new Date();
+
+  if (!(req.body.firstName || req.body.lastName)) {
+    handleError(res, "Invalid user input", "Must provide a first or last name.", 400);
+  }
+
+  db.collection(CONTACTS_COLLECTION).insertOne(newContact, function(err, doc) {
+    if (err) {
+      handleError(res, err.message, "Failed to create new contact.");
+    } else {
+      res.status(201).json(doc.ops[0]);
+    }
+  });
 });
