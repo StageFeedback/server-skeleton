@@ -1,56 +1,37 @@
-var express = require("express");
-var path = require("path");
-var bodyParser = require("body-parser");
 
-var mongodb = require("mongodb");
-var ObjectID = mongodb.ObjectID;
+/*
+  Notes:
+  1) Create an IAM user(StageProject for this project) on the IAM USer management console.
+  2) For working with a dynamodb use the region and the endpoint of your table.
+*/
 
-var CONTACTS_COLLECTION = "contacts";
+var express = require('express');
+var AWS = require('aws-sdk');
 
 var app = express();
-app.use(express.static(__dirname + "/public"));
-app.use(bodyParser.json());
 
-var db;
-
-mongodb.MongoClient.connect(process.env.MONGODB_URI, function(err, database){
-  if (err) {
-    console.log('hello');
-    process.exit(1);
-  }
-
-  db = database;
-  console.log("database connection ready");
-
-  var server = app.listen(process.env.PORT || 8080, function(){
-    var port = server.address().port;
-    console.log("App is now running on port:", port);
-  });
+AWS.config.update({
+  region: "us-west-1",
+  endpoint: "https://dynamodb.us-west-1.amazonaws.com"
 });
 
+var docClient = new AWS.DynamoDB.DocumentClient();
 
-function handleError(res, reason, message, code){
-  console.log("ERROR: " + reason);
-  res.status(code || 500).json({"error": message});
-}
-
-app.get("/contacts", function(req, res){
-
-});
-
-app.post("/contacts", function(req, res) {
-  var newContact = req.body;
-  newContact.createDate = new Date();
-
-  if (!(req.body.firstName || req.body.lastName)) {
-    handleError(res, "Invalid user input", "Must provide a first or last name.", 400);
+app.get('/addName/:name',function(req, res) {
+  var params = {
+    TableName: "Names",
+    Item:{
+      "names": req.params.name
+    }
   }
 
-  db.collection(CONTACTS_COLLECTION).insertOne(newContact, function(err, doc) {
+  docClient.put(params, function(err, data) {
     if (err) {
-      handleError(res, err.message, "Failed to create new contact.");
-    } else {
-      res.status(201).json(doc.ops[0]);
+      res.send('Error: '+err);
+    }
+    else {
+      res.send("Added item:");
     }
   });
 });
+app.listen(3000);
