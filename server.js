@@ -6,32 +6,16 @@
 */
 
 var express = require('express');
-var AWS = require('aws-sdk');
-
 var app = express();
 
-AWS.config.update({
-  region: "us-west-1",
-  endpoint: "https://dynamodb.us-west-1.amazonaws.com"
-});
+/*
+* Modules
+*/
+var DynamoDBAddData = require('./src/DynamoDB/dynamoDB');
+var S3Actions = require('./src/S3/s3');
 
-var docClient = new AWS.DynamoDB.DocumentClient();
+app.get('/listBuckets', S3Actions.listBuckets);
+app.get('/upload/:body', S3Actions.uploadToBucket);
 
-app.get('/addName/:name',function(req, res) {
-  var params = {
-    TableName: "Names",
-    Item:{
-      "names": req.params.name
-    }
-  }
 
-  docClient.put(params, function(err, data) {
-    if (err) {
-      res.send('Error: '+err);
-    }
-    else {
-      res.send("Added item:");
-    }
-  });
-});
 app.listen(3000);
