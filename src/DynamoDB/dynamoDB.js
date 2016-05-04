@@ -16,7 +16,7 @@ exports.uploadData = function(data) {
       console.log(err);
     }
     else {
-      console.log('Item Added');
+      console.log('Uploaded to DynamoDB');
     }
   })
 }

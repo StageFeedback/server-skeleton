@@ -11,11 +11,9 @@ var app = express();
 /*
 * Modules
 */
-var DynamoDBAddData = require('./src/DynamoDB/dynamoDB');
 var S3Actions = require('./src/S3/s3');
 
 app.get('/listBuckets', S3Actions.listBuckets);
-app.get('/upload/:body', S3Actions.uploadToBucket);
-
+app.get('/upload/:title', S3Actions.uploadLargeFileToBucket);
 
 app.listen(3000);
