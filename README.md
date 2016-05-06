@@ -7,7 +7,9 @@
 5) Open a new terminal window and type: <br>
 <br>
 POST:- curl -i -X POST -H 'Content-Type: application/json' -d '{"title": "<title>", "path": "<path to file>"' http://localhost:3000/upload/
+
 <br>
+
 GET:- curl -i -X GET http://localhost:3000/listBuckets
 
 
