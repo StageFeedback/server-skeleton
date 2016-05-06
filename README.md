@@ -1,4 +1,4 @@
-# server-skeleton
+# Stage Feedback-REST
 
 1) clone this repository. Open your terminal and navigate to the root folder of this Repo <br>
 2) Do an NPM install (Make sure you have npm installed). <br> 
