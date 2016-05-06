@@ -6,9 +6,12 @@ var zlib = require('zlib');
 var DynamoDBAddData = require('../DynamoDB/dynamoDB');
 
 var s3 = new AWS.S3({region: "us-west-1"});
+var bucketName = 'stagefeedback';
+
+//--------------------------------------------GET CALLS-----------------------------------------
 
 /*
-*  List all Buckets
+*  List all my buckets
 */
 exports.listBuckets = function(req, res) {
 
@@ -26,18 +29,33 @@ exports.listBuckets = function(req, res) {
 }
 
 /*
+* Get a file from my bucket
+*/
+exports.getFile = function(req, res) {
+  var file = require('fs').createWriteStream('/Users/Tanvimarballi/Desktop/file1.jpg');
+  s3.getObject({Bucket: bucketName, Key: req.params.body}).createReadStream().pipe(file);
+}
+
+
+//--------------------------------------------POST CALLS-----------------------------------------
+
+
+/*
 * Upload Large media to S3
 */
-exports.uploadLargeFileToBucket = function (req, res) {
-  var filePath = '/Users/Tanvimarballi/Desktop/IMG_0134.jpg';
+exports.uploadMedia = function (req, res) {
 
-  var body = fs.createReadStream(filePath).pipe(zlib.createGzip());
-  var params = {Bucket: 'stagefeedback', Key: req.params.title, Body: body}
+   var body = fs.createReadStream(req.body.path).pipe(zlib.createGzip());
+   var params = {
+     Bucket: bucketName,
+     Key: req.body.title,
+     Body: body
+   }
 
   s3.upload(params)
   .on('httpUploadProgress', function(evt) {
-      console.log(evt);
-    })
+    console.log(evt);
+  })
   .send(function(err,data) {
       if (err) {
         res.send(err);
@@ -48,12 +66,4 @@ exports.uploadLargeFileToBucket = function (req, res) {
         res.send('Success');
       }
     })
-}
-
-/*
-* Get a file from S3
-*/
-exports.getFileFromBucket = function(req, res) {
-  var file = require('fs').createWriteStream('/Users/Tanvimarballi/Desktop/file1.jpg');
-  s3.getObject({Bucket: 'stagefeedback', Key: req.params.body}).createReadStream().pipe(file);
 }

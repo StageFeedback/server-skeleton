@@ -6,14 +6,20 @@
 */
 
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
+
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
 
 /*
 * Modules
 */
 var S3Actions = require('./src/S3/s3');
 
+app.post('/upload/', S3Actions.uploadMedia);
 app.get('/listBuckets', S3Actions.listBuckets);
-app.get('/upload/:title', S3Actions.uploadLargeFileToBucket);
 
 app.listen(3000);
